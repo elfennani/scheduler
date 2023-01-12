@@ -1,0 +1,72 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "mongodb"
+    url      = "mongodb+srv://elfe:nizar2002@cluster0.7n0pv8y.mongodb.net/Scheduler%3FretryWrites=true&w=majority"
+}
+
+enum Role {
+    TEACHER
+    ADMIN
+    STUDENT
+}
+
+enum Years {
+    FIRST
+    SECOND
+}
+
+model StudyModel {
+    id      String    @id @default(auto()) @map("_id") @db.ObjectId
+    label   String
+    hours   String
+    year    Years     @default(FIRST)
+    User    User?     @relation(fields: [userId], references: [id])
+    userId  String?   @db.ObjectId
+    Class   Class?    @relation(fields: [classId], references: [id])
+    classId String?   @db.ObjectId
+    Session Session[]
+}
+
+model User {
+    id               String       @id @default(auto()) @map("_id") @db.ObjectId
+    email            String       @unique
+    password         String
+    role             Role         @default(STUDENT)
+    firstName        String
+    lastName         String
+    natID            String
+    class            Class?       @relation(fields: [classId], references: [id])
+    classId          String?      @db.ObjectId
+    models           StudyModel[]
+    registrationYear DateTime
+}
+
+model Branch {
+    id    String  @id @default(auto()) @map("_id") @db.ObjectId
+    name  String  @unique
+    Class Class[]
+}
+
+model Class {
+    id       String       @id @default(auto()) @map("_id") @db.ObjectId
+    label    String
+    branch   Branch       @relation(fields: [branchId], references: [id])
+    year     Years        @default(FIRST)
+    User     User[]
+    models   StudyModel[]
+    Session  Session[]
+    branchId String       @db.ObjectId
+}
+
+model Session {
+    id           String     @id @default(auto()) @map("_id") @db.ObjectId
+    class        Class      @relation(fields: [classId], references: [id])
+    classId      String     @db.ObjectId
+    from         Int
+    to           Int
+    model        StudyModel @relation(fields: [studyModelId], references: [id])
+    studyModelId String     @db.ObjectId
+}

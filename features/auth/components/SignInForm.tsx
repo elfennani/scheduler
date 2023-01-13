@@ -44,7 +44,7 @@ const SignInForm = ({}: Props) => {
             </h1>
             {error && (
                 <p role="alert" className="p-4 bg-red-100 text-red-700">
-                    Error: {error}
+                    {error}
                 </p>
             )}
             <Input type="email" ref={email} placeholder="example@domain.xyz">

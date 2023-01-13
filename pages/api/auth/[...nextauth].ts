@@ -42,6 +42,7 @@ export const authOptions: AuthOptions = {
             },
         }),
     ],
+
     callbacks: {
         jwt: async ({ token, user }) => {
             if (user) {

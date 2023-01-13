@@ -1,1 +1,2 @@
+declare global {}
 export {};

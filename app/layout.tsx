@@ -6,7 +6,11 @@ import { Outfit } from "@next/font/google";
 import StyledComponentsRegistry from "./registry";
 import Providers from "@/common/components/Providers";
 
-const outfit = Outfit({ weight: ["400", "500"] });
+const outfit = Outfit({
+    weight: ["400", "500"],
+    subsets: ["latin"],
+    display: "block",
+});
 
 export default function RootLayout({
     children,

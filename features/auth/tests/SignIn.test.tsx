@@ -65,7 +65,7 @@ describe("Sign in page", () => {
         await act(async () => fireEvent.submit(form));
 
         const errorCard = await waitFor(() => screen.getByRole("alert"));
-        expect(errorCard.textContent).toEqual(`Error: ${error}`);
+        expect(errorCard.textContent).toEqual(`${error}`);
     });
 
     it("should send correct data", async () => {

@@ -5,12 +5,7 @@ import React from "react";
 type Props = {};
 
 const DashboardPage = (props: Props) => {
-    return (
-        <div>
-            DashboardPage
-            <button onClick={() => signOut()}>Sign out</button>
-        </div>
-    );
+    return <div>DashboardPage</div>;
 };
 
 export default DashboardPage;

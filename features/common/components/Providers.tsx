@@ -1,7 +1,9 @@
 "use client";
+import "../../../styles/globals.css";
 import React from "react";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { SessionProvider } from "next-auth/react";
+import { Outfit } from "@next/font/google";
 
 type Props = {
     children: any;

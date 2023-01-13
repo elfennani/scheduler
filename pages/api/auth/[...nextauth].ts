@@ -20,6 +20,7 @@ export const authOptions: AuthOptions = {
                 },
             },
             authorize: async (credentials, req) => {
+                const prisma = client;
                 if (!credentials || !prisma) return null;
 
                 const user: User | null = await prisma.user.findFirst({

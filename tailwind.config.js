@@ -6,7 +6,11 @@ module.exports = {
         "./features/**/*.{js,ts,jsx,tsx}",
     ],
     theme: {
-        extend: {},
+        extend: {
+            width: {
+                128: "32rem",
+            },
+        },
     },
     plugins: [],
 };

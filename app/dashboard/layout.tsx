@@ -1,6 +1,5 @@
 import Sidebar from "@/common/components/UI/Sidebar";
 import { unstable_getServerSession } from "next-auth";
-import { Session, SessionData } from "next-session/lib/types";
 import { redirect } from "next/navigation";
 import { authOptions } from "pages/api/auth/[...nextauth]";
 import React, { ReactNode } from "react";
@@ -16,7 +15,7 @@ const DashboardLayout = async (props: Props) => {
     return (
         <>
             <Sidebar userRole={session.user?.role} />
-            <main className="ml-16 p-8">{props.children}</main>
+            <main className="ml-16 p-8 pt-16">{props.children}</main>
         </>
     );
 };

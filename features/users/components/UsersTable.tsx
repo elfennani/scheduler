@@ -23,6 +23,12 @@ const UsersTable = ({ users: usersSerialized }: Props) => {
         registrationYear: new Date(user.registrationYear),
     }));
 
+    const parseDate = (date: Date): string => {
+        return `${date.getDate() < 10 ? "0" : ""}${date.getDate()}/${
+            date.getMonth() < 10 ? "0" : ""
+        }${date.getMonth() + 1}/${date.getFullYear()}`;
+    };
+
     return (
         <div className="mt-4">
             {addUser && (
@@ -72,7 +78,7 @@ const UsersTable = ({ users: usersSerialized }: Props) => {
                             <td className="px-4 py-3">{user.role}</td>
                             <td className="px-4 py-3">{user.natID}</td>
                             <td className="px-4 py-3">
-                                {user.registrationYear.toISOString()}
+                                {parseDate(user.registrationYear)}
                             </td>
                         </tr>
                     ))}

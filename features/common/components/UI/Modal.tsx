@@ -18,8 +18,10 @@ const Modal = ({ title, children, onClose }: Props) => {
             <div
                 className="fixed top-0 bottom-0 left-0 right-0 bg-black bg-opacity-30"
                 onClick={() => onClose && onClose()}
+                data-testid="backdrop"
             >
                 <main
+                    data-testid="main-modal"
                     onClick={(e) => e.stopPropagation()}
                     className="fixed top-2/4 left-1/2 -translate-x-1/2 -translate-y-1/2 backdrop:bg-black bg-white p-6 border-2 w-128"
                 >

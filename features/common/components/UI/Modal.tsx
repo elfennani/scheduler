@@ -16,14 +16,14 @@ const Modal = ({ title, children, onClose }: Props) => {
     return (
         <Portal node={doc && document.getElementById("san-francisco")}>
             <div
-                className="fixed top-0 bottom-0 left-0 right-0 bg-black bg-opacity-30"
+                className="fixed top-0 p-4 bottom-0 left-0 right-0 bg-black bg-opacity-30"
                 onClick={() => onClose && onClose()}
                 data-testid="backdrop"
             >
                 <main
                     data-testid="main-modal"
                     onClick={(e) => e.stopPropagation()}
-                    className="fixed top-2/4 left-1/2 -translate-x-1/2 -translate-y-1/2 backdrop:bg-black bg-white p-6 border-2 w-128"
+                    className="fixed max-h-full overflow-auto top-2/4 left-1/2 -translate-x-1/2 -translate-y-1/2 backdrop:bg-black bg-white p-6 border-2 w-128"
                 >
                     {title && (
                         <h1 className="text-2xl text-slate-900 mb-4 mt-0">

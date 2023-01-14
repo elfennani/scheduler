@@ -1,23 +1,35 @@
-import React, { ForwardedRef, Ref } from "react";
+import React, { ForwardedRef, ReactNode, Ref } from "react";
 
 interface Props
     extends React.DetailedHTMLProps<
         React.InputHTMLAttributes<HTMLInputElement>,
         HTMLInputElement
     > {
-    children?: string;
+    children?: ReactNode | ReactNode[];
+    error?: string;
 }
 
-const Input = React.forwardRef((props: Props, ref: any) => (
-    <label className="flex flex-col text-sm text-slate-400 gap-1 focus-within:text-emerald-500">
-        {props.children}
-        <input
-            {...{ ...props, children: undefined }}
-            ref={ref}
-            className={`text-slate-900 p-2 border-2 text-base border-slate-200 outline-none focus:border-emerald-500  focus:bg-emerald-50 transition-all ${props.className}`}
-        />
-    </label>
-));
+const Input = React.forwardRef(
+    ({ children, error, ...props }: Props, ref: any) => (
+        <label
+            className={`flex flex-col text-sm text-slate-400 gap-1 focus-within:text-emerald-500 ${
+                error && "!text-red-500"
+            }`}
+        >
+            {children}
+            <input
+                {...{ ...props, children: undefined }}
+                ref={ref}
+                className={`text-slate-900 p-2 border-2 text-base border-slate-200 outline-none focus:border-emerald-500  focus:bg-emerald-50 transition-all ${
+                    props.className
+                } ${error && "!text-red-500 !border-red-500 !bg-red-50"}`}
+            />
+            {error && (
+                <p className="text-red-500 text-sm  text-right">{error}</p>
+            )}
+        </label>
+    )
+);
 
 Input.displayName = "Input";
 

@@ -1,6 +1,5 @@
 "use client";
-import Head from "app/head";
-import { signOut } from "next-auth/react";
+
 import React from "react";
 
 type Props = {};
@@ -8,7 +7,7 @@ type Props = {};
 const DashboardPage = (props: Props) => {
     return (
         <>
-            <div>DashboardPage</div>
+            <div>DashboardPages</div>
         </>
     );
 };

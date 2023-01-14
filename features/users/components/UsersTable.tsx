@@ -1,27 +1,40 @@
 "use client";
 import Button from "@/common/components/UI/Button";
 import Input from "@/common/components/UI/Input";
-// import Modal from "@/common/components/UI/Modal";
-import { User } from "@prisma/client";
 import dynamic from "next/dynamic";
-import React, { useState } from "react";
+import { useState } from "react";
 import { AiOutlineUserAdd } from "react-icons/ai";
-
-const Modal = dynamic(() => import("@/common/components/UI/Modal"), {
-    ssr: false,
-});
+import { useMutation, useQuery, useQueryClient } from "react-query";
+import { deleteUser, getUsers } from "repositories/users";
+import { deserialize } from "superjson";
+import { SuperJSONResult } from "superjson/dist/types";
 
 type Props = {
-    users: Modify<User, { registrationYear: string }>[];
+    users: SuperJSONResult;
 };
-
-const UsersTable = ({ users: usersSerialized }: Props) => {
+const AddUserModal = dynamic(() => import("../components/AddUserModal"), {
+    ssr: false,
+});
+const UsersTable = ({ users }: Props) => {
     const [addUser, setAddUser] = useState(false);
+    const queryClient = useQueryClient();
+    const { data, isLoading, error, isError, isSuccess } = useQuery(
+        ["users"],
+        () => getUsers(),
+        {
+            initialData: deserialize(users),
+        }
+    );
 
-    const users: User[] = usersSerialized.map((user) => ({
-        ...user,
-        registrationYear: new Date(user.registrationYear),
-    }));
+    const { mutate: deleteUserMutation, isLoading: isDeletingUser } =
+        useMutation({
+            mutationFn: (id: string) => {
+                return deleteUser(id);
+            },
+            onSuccess() {
+                queryClient.invalidateQueries(["users"]);
+            },
+        });
 
     const parseDate = (date: Date): string => {
         return `${date.getDate() < 10 ? "0" : ""}${date.getDate()}/${
@@ -29,13 +42,12 @@ const UsersTable = ({ users: usersSerialized }: Props) => {
         }${date.getMonth() + 1}/${date.getFullYear()}`;
     };
 
+    if (error || isError || !isSuccess) return <>An Error Occured</>;
+    if (isLoading) return <>Loading...</>;
+
     return (
         <div className="mt-4">
-            {addUser && (
-                <Modal title="Add User" onClose={() => setAddUser(false)}>
-                    <Input>username</Input>
-                </Modal>
-            )}
+            {addUser && <AddUserModal onClose={() => setAddUser(false)} />}
             <div className="flex justify-between items-end">
                 <Input className="w-96">Search</Input>
                 <Button
@@ -63,10 +75,13 @@ const UsersTable = ({ users: usersSerialized }: Props) => {
                         <th scope="col" className="px-4 py-3">
                             Register.
                         </th>
+                        <th scope="col" className="px-4 py-3">
+                            Delete
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
-                    {users.map((user) => (
+                    {data.map((user) => (
                         <tr
                             key={user.id}
                             className="text-base border border-slate-200"
@@ -79,6 +94,13 @@ const UsersTable = ({ users: usersSerialized }: Props) => {
                             <td className="px-4 py-3">{user.natID}</td>
                             <td className="px-4 py-3">
                                 {parseDate(user.registrationYear)}
+                            </td>
+                            <td className="px-4 py-3">
+                                <Button
+                                    onClick={() => deleteUserMutation(user.id)}
+                                >
+                                    {isDeletingUser ? "Deleting" : "Delete"}
+                                </Button>
                             </td>
                         </tr>
                     ))}

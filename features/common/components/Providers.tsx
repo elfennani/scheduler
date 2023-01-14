@@ -1,15 +1,13 @@
 "use client";
 import "../../../styles/globals.css";
 import React from "react";
-import { QueryClient, QueryClientProvider } from "react-query";
+import { QueryClientProvider } from "react-query";
 import { SessionProvider } from "next-auth/react";
-import { Outfit } from "@next/font/google";
+import queryClient from "lib/queryClient";
 
 type Props = {
     children: any;
 };
-
-export const queryClient = new QueryClient();
 
 const Providers = (props: Props) => {
     return (

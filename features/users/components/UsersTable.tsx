@@ -1,30 +1,31 @@
 "use client";
 import Button from "@/common/components/UI/Button";
 import Input from "@/common/components/UI/Input";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+// import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import dynamic from "next/dynamic";
 import { useState } from "react";
 import { AiOutlineUserAdd } from "react-icons/ai";
-import { useMutation, useQuery, useQueryClient } from "react-query";
 import { deleteUser, getUsers } from "repositories/users";
 import { deserialize } from "superjson";
 import { SuperJSONResult } from "superjson/dist/types";
+import AddUserModal from "../components/AddUserModal";
 
 type Props = {
     users: SuperJSONResult;
 };
-const AddUserModal = dynamic(() => import("../components/AddUserModal"), {
-    ssr: false,
-});
+// const AddUserModal = dynamic(() => import("../components/AddUserModal"), {
+//     ssr: false,
+// });
 const UsersTable = ({ users }: Props) => {
     const [addUser, setAddUser] = useState(false);
     const queryClient = useQueryClient();
-    const { data, isLoading, error, isError, isSuccess } = useQuery(
-        ["users"],
-        () => getUsers(),
-        {
-            initialData: deserialize(users),
-        }
-    );
+
+    // TODO: Make table row into a seperate component and move the mutate function into it
+
+    const usersQuery = useQuery(["users"], () => getUsers(), {
+        placeholderData: deserialize(users),
+    });
 
     const { mutate: deleteUserMutation, isLoading: isDeletingUser } =
         useMutation({
@@ -32,18 +33,23 @@ const UsersTable = ({ users }: Props) => {
                 return deleteUser(id);
             },
             onSuccess() {
-                queryClient.invalidateQueries(["users"]);
+                return queryClient.invalidateQueries(["users"]);
             },
         });
 
-    const parseDate = (date: Date): string => {
-        return `${date.getDate() < 10 ? "0" : ""}${date.getDate()}/${
+    const parseDate = (date: Date) =>
+        `${date.getDate() < 10 ? "0" : ""}${date.getDate()}/${
             date.getMonth() < 10 ? "0" : ""
         }${date.getMonth() + 1}/${date.getFullYear()}`;
-    };
 
-    if (error || isError || !isSuccess) return <>An Error Occured</>;
-    if (isLoading) return <>Loading...</>;
+    if (usersQuery.error)
+        return (
+            <p className="p-4 border-red-500 bg-red-50 text-red-900 border-2">
+                Failed to load users
+            </p>
+        );
+
+    if (usersQuery.isLoading || !usersQuery.data) return <>Loading...</>;
 
     return (
         <div className="mt-4">
@@ -57,9 +63,9 @@ const UsersTable = ({ users }: Props) => {
                     <AiOutlineUserAdd /> Add User
                 </Button>
             </div>
-            <table className="w-full mt-4 text-sm text-left text-gray-500 bg-white border-2 border-slate-200">
+            <table className="w-full mt-4 text-sm text-left text-gray-500 bg-white dark:bg-slate-800 dark:text-gray-400 border-2 dark:border-slate-700 border-slate-200">
                 <thead>
-                    <tr className="text-xs text-gray-700 uppercase bg-slate-200 sticky top-0">
+                    <tr className="text-xs text-gray-700 uppercase bg-slate-200 dark:bg-slate-700 dark:text-gray-400 sticky top-0">
                         <th scope="col" className="px-4 py-3">
                             Fullname
                         </th>
@@ -81,12 +87,12 @@ const UsersTable = ({ users }: Props) => {
                     </tr>
                 </thead>
                 <tbody>
-                    {data.map((user) => (
+                    {usersQuery.data.map((user) => (
                         <tr
                             key={user.id}
-                            className="text-base border border-slate-200"
+                            className="text-base border border-slate-200 dark:border-slate-700"
                         >
-                            <td className="px-4 py-3 text-slate-800 font-medium">
+                            <td className="px-4 py-3 text-slate-800 dark:text-slate-200 font-medium">
                                 {user.firstName} {user.lastName}
                             </td>
                             <td className="px-4 py-3">{user.email}</td>

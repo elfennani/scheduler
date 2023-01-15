@@ -1,19 +1,24 @@
 "use client";
 import "../../../styles/globals.css";
 import React from "react";
-import { QueryClientProvider } from "react-query";
 import { SessionProvider } from "next-auth/react";
-import queryClient from "lib/queryClient";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import dynamic from "next/dynamic";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 type Props = {
     children: any;
 };
+
+const queryClient = new QueryClient();
 
 const Providers = (props: Props) => {
     return (
         <SessionProvider refetchOnWindowFocus={false}>
             <QueryClientProvider client={queryClient}>
                 {props.children}
+                <div id="modals"></div>
+                <ReactQueryDevtools initialIsOpen={false} />
             </QueryClientProvider>
         </SessionProvider>
     );

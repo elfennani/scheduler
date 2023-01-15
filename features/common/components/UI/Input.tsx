@@ -20,7 +20,7 @@ const Input = React.forwardRef(
             <input
                 {...{ ...props, children: undefined }}
                 ref={ref}
-                className={`text-slate-900 p-2 border-2 text-base border-slate-200 outline-none focus:border-emerald-500  focus:bg-emerald-50 transition-all ${
+                className={`text-slate-900 dark:bg-slate-800 dark:border-slate-600 dark:focus:bg-emerald-900 dark:text-white p-2 border-2 text-base border-slate-200 outline-none focus:border-emerald-500  focus:bg-emerald-50 transition-all ${
                     props.className
                 } ${error && "!text-red-500 !border-red-500 !bg-red-50"}`}
             />

@@ -43,11 +43,11 @@ const Sidebar = (props: Props) => {
 
     return (
         <div
-            className={`bg-white border-r-2  fixed top-0 left-0 bottom-0 flex flex-col justify-between items-stretch p-1 py-4 transition-all w-16 overflow-x-hidden `}
+            className={`bg-white border-r-2 dark:bg-black dark:border-slate-800 fixed top-0 left-0 bottom-0 flex flex-col justify-between items-stretch p-1 py-4 transition-all w-16 overflow-x-hidden `}
         >
             <div>
                 <Logo compact className="mb-4" />
-                <hr />
+                <hr className="border-slate-500" />
                 <nav className="mt-4">
                     <ul className="flex gap-2 flex-col">
                         {sidebarOption
@@ -61,9 +61,9 @@ const Sidebar = (props: Props) => {
                                     <Link
                                         href={option.route}
                                         type="button"
-                                        className={`text-sm w-full hover:bg-slate-100 py-2 text-slate-400 rounded-sm capitalize gap-1 flex  items-center flex-col justify-center ${
+                                        className={`text-sm w-fulla transition-colors hover:bg-slate-100 py-2 text-slate-400 dark:hover:bg-slate-800 rounded-sm capitalize gap-1 flex  items-center flex-col justify-center ${
                                             pathname == option.route &&
-                                            "!text-emerald-500 !bg-emerald-50"
+                                            "!text-emerald-500 !bg-emerald-50 dark:!bg-emerald-900 dark:!text-emerald-50 "
                                         }`}
                                     >
                                         <option.icon size={16} />
@@ -79,7 +79,7 @@ const Sidebar = (props: Props) => {
                     onClick={() => signOut()}
                     title="log out"
                     type="button"
-                    className="w-full hover:bg-slate-100 h-14 text-emerald-800 rounded-sm text-sm flex  items-center flex-col justify-center"
+                    className="w-full hover:bg-slate-100 dark:text-emerald-200 h-14 text-emerald-800 rounded-sm text-sm flex  items-center flex-col justify-center"
                 >
                     <AiOutlineLogout size={24} />
                     signout

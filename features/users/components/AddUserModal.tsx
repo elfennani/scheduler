@@ -4,7 +4,7 @@ import Input from "@/common/components/UI/Input";
 import Modal from "@/common/components/UI/Modal";
 import { User } from "@prisma/client";
 import { useForm } from "react-hook-form";
-import { useMutation, useQueryClient } from "react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { addUser } from "repositories/users";
 
 type Props = {
@@ -86,7 +86,7 @@ const AddUserModal = (props: Props) => {
                 </Input>
                 <div className="flex flex-col gap-2 text-slate-400 focus-within:text-emerald-500">
                     <h3 className="text-sm ">Role</h3>
-                    <div className="flex gap-6 text-slate-900">
+                    <div className="flex gap-6 text-slate-900 dark:text-slate-100">
                         <label className="flex gap-2 ">
                             <input
                                 defaultChecked

@@ -16,7 +16,7 @@ const Users = async (props: Props) => {
 
     return (
         <div>
-            <h1 className="text-3xl font-medium text-slate-500">Users</h1>
+            <h1 className="text-3xl font-medium text-slate-500 mb-4">Users</h1>
             {props.children}
         </div>
     );

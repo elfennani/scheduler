@@ -20,7 +20,9 @@ export default function RootLayout({
     return (
         <html>
             <head />
-            <body className={`${outfit.className} bg-slate-50`}>
+            <body
+                className={`${outfit.className} bg-slate-50 dark:bg-slate-900 dark:text-white`}
+            >
                 <StyledComponentsRegistry>
                     <>
                         <Providers>{children}</Providers>

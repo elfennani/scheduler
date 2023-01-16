@@ -8,6 +8,7 @@ import { deleteUser, getUsers } from "repositories/users";
 import { deserialize } from "superjson";
 import { SuperJSONResult } from "superjson/dist/types";
 import AddUserModal from "../components/AddUserModal";
+import UserRow from "./UserRow";
 
 type Props = {
     users: SuperJSONResult;
@@ -15,28 +16,11 @@ type Props = {
 
 const UsersTable = ({ users }: Props) => {
     const [addUser, setAddUser] = useState(false);
-    const queryClient = useQueryClient();
-
-    // TODO: Make table row into a seperate component and move the mutate function into it
 
     const usersQuery = useQuery(["users"], () => getUsers(), {
         placeholderData: deserialize(users),
+        onError: (e) => console.log(e),
     });
-
-    const { mutate: deleteUserMutation, isLoading: isDeletingUser } =
-        useMutation({
-            mutationFn: (id: string) => {
-                return deleteUser(id);
-            },
-            onSuccess() {
-                return queryClient.invalidateQueries(["users"]);
-            },
-        });
-
-    const parseDate = (date: Date) =>
-        `${date.getDate() < 10 ? "0" : ""}${date.getDate()}/${
-            date.getMonth() < 10 ? "0" : ""
-        }${date.getMonth() + 1}/${date.getFullYear()}`;
 
     if (usersQuery.error)
         return (
@@ -77,34 +61,14 @@ const UsersTable = ({ users }: Props) => {
                         <th scope="col" className="px-4 py-3">
                             Register.
                         </th>
-                        <th scope="col" className="px-4 py-3">
-                            Delete
+                        <th scope="col" className="px-4 py-3 w-16">
+                            Actions
                         </th>
                     </tr>
                 </thead>
                 <tbody>
                     {usersQuery.data.map((user) => (
-                        <tr
-                            key={user.id}
-                            className="text-base border border-slate-200 dark:border-slate-700"
-                        >
-                            <td className="px-4 py-3 text-slate-800 dark:text-slate-200 font-medium">
-                                {user.firstName} {user.lastName}
-                            </td>
-                            <td className="px-4 py-3">{user.email}</td>
-                            <td className="px-4 py-3">{user.role}</td>
-                            <td className="px-4 py-3">{user.natID}</td>
-                            <td className="px-4 py-3">
-                                {parseDate(user.registrationYear)}
-                            </td>
-                            <td className="px-4 py-3">
-                                <Button
-                                    onClick={() => deleteUserMutation(user.id)}
-                                >
-                                    {isDeletingUser ? "Deleting" : "Delete"}
-                                </Button>
-                            </td>
-                        </tr>
+                        <UserRow key={user.id} user={user} />
                     ))}
                 </tbody>
             </table>

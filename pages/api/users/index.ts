@@ -1,24 +1,32 @@
 import { AddUserFormData } from "@/users/components/AddUserModal";
 import { Role, User } from "@prisma/client";
-import { getRoles } from "@testing-library/react";
 import { getReasonPhrase, StatusCodes as HttpCodes } from "http-status-codes";
 import client from "lib/prismadb";
 import { NextApiRequest, NextApiResponse } from "next";
+import { unstable_getServerSession } from "next-auth";
+import { AiTwotoneLayout } from "react-icons/ai";
 import sha256 from "sha256";
-import SuperJSON, { deserialize, serialize } from "superjson";
+import { deserialize, parse, serialize, stringify } from "superjson";
+import { authOptions } from "../auth/[...nextauth]";
+
+const sendError = (res: NextApiResponse, code: HttpCodes, message?: any) =>
+    res
+        .status(code)
+        .json({ error: getReasonPhrase(code), message: stringify(message) });
 
 export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse
 ) {
+    const session = await unstable_getServerSession(req, res, authOptions);
+
+    if (!session || session.user.role != "ADMIN") {
+        sendError(res, HttpCodes.FORBIDDEN);
+        return;
+    }
+
     if (req.method == "POST") {
         const body = deserialize<AddUserFormData>(req.body);
-        if (body.role !== Role.ADMIN) {
-            res.status(HttpCodes.FORBIDDEN).json({
-                error: getReasonPhrase(HttpCodes.FORBIDDEN),
-            });
-            return;
-        }
 
         const user = await client.user.findFirst({
             where: {
@@ -27,9 +35,8 @@ export default async function handler(
         });
 
         if (user) {
-            res.status(HttpCodes.CONFLICT).json({
-                error: getReasonPhrase(HttpCodes.CONFLICT),
-            });
+            sendError(res, HttpCodes.CONFLICT);
+
             return;
         }
 
@@ -48,9 +55,8 @@ export default async function handler(
                 },
             });
         } catch (error) {
-            res.status(HttpCodes.INTERNAL_SERVER_ERROR).json({
-                error: getReasonPhrase(HttpCodes.INTERNAL_SERVER_ERROR),
-            });
+            sendError(res, HttpCodes.INTERNAL_SERVER_ERROR, error);
+
             return;
         }
         res.status(HttpCodes.OK).json(serialize(userAdded));
@@ -66,9 +72,7 @@ export default async function handler(
         });
 
         if (!user) {
-            res.status(HttpCodes.BAD_REQUEST).send({
-                error: getReasonPhrase(HttpCodes.BAD_REQUEST),
-            });
+            sendError(res, HttpCodes.BAD_REQUEST);
             return;
         }
 
@@ -77,10 +81,7 @@ export default async function handler(
                 where: { id: userId },
             });
         } catch (error) {
-            res.status(HttpCodes.INTERNAL_SERVER_ERROR).send({
-                error: getReasonPhrase(HttpCodes.INTERNAL_SERVER_ERROR),
-                detailedError: error,
-            });
+            sendError(res, HttpCodes.INTERNAL_SERVER_ERROR, error);
             return;
         }
 
@@ -88,8 +89,13 @@ export default async function handler(
         return;
     }
     if (req.method == "GET") {
-        const users = await client.user.findMany();
+        let users;
+        try {
+            users = await client.user.findMany();
 
-        res.status(HttpCodes.OK).json(serialize(users));
+            res.status(HttpCodes.OK).json(serialize(users));
+        } catch (error) {
+            sendError(res, HttpCodes.INTERNAL_SERVER_ERROR);
+        }
     }
 }

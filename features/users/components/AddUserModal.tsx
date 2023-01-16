@@ -6,6 +6,7 @@ import { User } from "@prisma/client";
 import { useForm } from "react-hook-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { addUser } from "repositories/users";
+import SuperJSON from "superjson";
 
 type Props = {
     onClose: () => void;
@@ -29,7 +30,11 @@ const AddUserModal = (props: Props) => {
         formState: { errors },
     } = useForm<AddUserFormData>();
 
-    const { mutate, isLoading, isError, error } = useMutation({
+    const { mutate, isLoading, isError, error } = useMutation<
+        User,
+        Error,
+        AddUserFormData
+    >({
         mutationFn: (data: AddUserFormData) => {
             return addUser(data);
         },
@@ -38,8 +43,8 @@ const AddUserModal = (props: Props) => {
                 ...(old || []),
                 result,
             ]);
-            queryClient.invalidateQueries(["users"]);
-            props.onClose();
+
+            return queryClient.invalidateQueries(["users"]);
         },
     });
 
@@ -51,7 +56,7 @@ const AddUserModal = (props: Props) => {
             >
                 {isError && (
                     <p role="alert" className="p-4 bg-red-100 text-red-700">
-                        {error as any}
+                        {error.message}
                     </p>
                 )}
                 <div className="grid grid-cols-2 gap-4">

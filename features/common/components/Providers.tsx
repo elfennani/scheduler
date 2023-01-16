@@ -18,7 +18,10 @@ const Providers = (props: Props) => {
             <QueryClientProvider client={queryClient}>
                 {props.children}
                 <div id="modals"></div>
-                <ReactQueryDevtools initialIsOpen={false} />
+                <ReactQueryDevtools
+                    initialIsOpen={false}
+                    position="bottom-right"
+                />
             </QueryClientProvider>
         </SessionProvider>
     );

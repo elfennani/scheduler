@@ -1,6 +1,7 @@
 import { AddUserFormData } from "@/users/components/AddUserModal";
 import { Role, User } from "@prisma/client";
 import { getRoles } from "@testing-library/react";
+import { getReasonPhrase, StatusCodes as HttpCodes } from "http-status-codes";
 import client from "lib/prismadb";
 import { NextApiRequest, NextApiResponse } from "next";
 import sha256 from "sha256";
@@ -12,9 +13,9 @@ export default async function handler(
 ) {
     if (req.method == "POST") {
         const body = deserialize<AddUserFormData>(req.body);
-        if (!Role[body.role]) {
-            res.status(400).send({
-                error: { error: `Role \`${body.role}\` is not defined` },
+        if (body.role !== Role.ADMIN) {
+            res.status(HttpCodes.FORBIDDEN).json({
+                error: getReasonPhrase(HttpCodes.FORBIDDEN),
             });
             return;
         }
@@ -26,8 +27,8 @@ export default async function handler(
         });
 
         if (user) {
-            res.status(409).send({
-                error: `Email ${body.email} already exists`,
+            res.status(HttpCodes.CONFLICT).json({
+                error: getReasonPhrase(HttpCodes.CONFLICT),
             });
             return;
         }
@@ -47,16 +48,16 @@ export default async function handler(
                 },
             });
         } catch (error) {
-            res.status(500).send({ error: "Failed to add user" });
+            res.status(HttpCodes.INTERNAL_SERVER_ERROR).json({
+                error: getReasonPhrase(HttpCodes.INTERNAL_SERVER_ERROR),
+            });
             return;
         }
-        res.status(200).send(serialize(userAdded));
+        res.status(HttpCodes.OK).json(serialize(userAdded));
         return;
     }
     if (req.method == "DELETE") {
         const { userId } = req.body;
-
-        console.log(userId);
 
         const user = await client.user.findFirst({
             where: {
@@ -65,8 +66,8 @@ export default async function handler(
         });
 
         if (!user) {
-            res.status(404).send({
-                error: `User not found`,
+            res.status(HttpCodes.BAD_REQUEST).send({
+                error: getReasonPhrase(HttpCodes.BAD_REQUEST),
             });
             return;
         }
@@ -76,23 +77,19 @@ export default async function handler(
                 where: { id: userId },
             });
         } catch (error) {
-            res.status(500).send({
-                error: "Failed to delete user",
+            res.status(HttpCodes.INTERNAL_SERVER_ERROR).send({
+                error: getReasonPhrase(HttpCodes.INTERNAL_SERVER_ERROR),
                 detailedError: error,
             });
-            console.error(
-                "Failed to delete user: ",
-                SuperJSON.stringify(error)
-            );
             return;
         }
 
-        res.status(204).send(null);
+        res.status(HttpCodes.NO_CONTENT).send(null);
         return;
     }
     if (req.method == "GET") {
         const users = await client.user.findMany();
 
-        res.status(200).json(serialize(users));
+        res.status(HttpCodes.OK).json(serialize(users));
     }
 }

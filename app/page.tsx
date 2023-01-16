@@ -6,7 +6,6 @@ type Props = {};
 
 const Index = async (props: Props) => {
     const session = await unstable_getServerSession(authOptions);
-    console.log(session);
 
     if (!session) redirect("/auth/signin");
 

@@ -2,8 +2,6 @@
 import Button from "@/common/components/UI/Button";
 import Input from "@/common/components/UI/Input";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-// import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import dynamic from "next/dynamic";
 import { useState } from "react";
 import { AiOutlineUserAdd } from "react-icons/ai";
 import { deleteUser, getUsers } from "repositories/users";
@@ -14,9 +12,7 @@ import AddUserModal from "../components/AddUserModal";
 type Props = {
     users: SuperJSONResult;
 };
-// const AddUserModal = dynamic(() => import("../components/AddUserModal"), {
-//     ssr: false,
-// });
+
 const UsersTable = ({ users }: Props) => {
     const [addUser, setAddUser] = useState(false);
     const queryClient = useQueryClient();

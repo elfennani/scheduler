@@ -1,16 +1,10 @@
 "use client";
-import { Role, User } from "@prisma/client";
+import { Role } from "@prisma/client";
 import { signOut } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import React, { ReactNode, useState } from "react";
 import { IconType } from "react-icons";
-import {
-    AiFillHome,
-    AiOutlineHome,
-    AiOutlineLogout,
-    AiOutlineUser,
-} from "react-icons/ai";
+import { AiOutlineHome, AiOutlineLogout, AiOutlineUser } from "react-icons/ai";
 import Logo from "./Logo";
 
 type Props = {
